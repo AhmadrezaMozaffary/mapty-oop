@@ -14,7 +14,7 @@ const inputElevation = document.querySelector('.form__input--elevation');
 if (navigator.geolocation)
   navigator.geolocation.getCurrentPosition(
     function (position) {
-      console.log(position);
+
       const { latitude } = position.coords;
       const { longitude } = position.coords;
       const coords = [latitude, longitude];
@@ -29,6 +29,24 @@ if (navigator.geolocation)
         .addTo(map)
         .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
         .openPopup();
+
+      map.on('click', function (mapE) {
+        const { lat, lng } = mapE.latlng;
+        L.marker([lat, lng])
+          .addTo(map)
+          .bindPopup(
+            L.popup({
+              maxWidth: 250,
+              minWidth: 50,
+              autoClose: false,
+              closeOnClick: false,
+              className: 'running-popup',
+            })
+          )
+          .setPopupContent('Workout')
+          .openPopup();
+          
+      });
     },
     function () {
       alert('Could not get your position');
