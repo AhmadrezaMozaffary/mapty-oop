@@ -16,9 +16,17 @@ class App {
   #mapEvent;
 
   constructor() {
+    this._getPosition();
+
+    form.addEventListener('submit', this._newWorkout.bind(this));
+
+    inputType.addEventListener('change', this._toggleElevationField);
+  }
+
+  _getPosition() {
     if (navigator.geolocation)
       navigator.geolocation.getCurrentPosition(
-        this._getPosition.bind(this),
+        this._loadMap.bind(this),
         function () {
           alert('Could not get your position');
         },
@@ -28,13 +36,9 @@ class App {
           maximumAge: 0,
         }
       );
-
-    form.addEventListener('submit', this._showForm.bind(this));
-
-    inputType.addEventListener('change', this._toggleElevationField);
   }
 
-  _getPosition(position) {
+  _loadMap(position) {
     const { latitude } = position.coords;
     const { longitude } = position.coords;
     const coords = [latitude, longitude];
@@ -51,17 +55,25 @@ class App {
       .openPopup();
 
     // Handling Click on map
-    this.#map.on('click', this._loadMap.bind(this));
+    this.#map.on('click', this._showForm.bind(this));
+
+
   }
 
-  _loadMap(mapE) {
+  _showForm(mapE) {
     this.#mapEvent = mapE;
     form.classList.remove('hidden');
     inputDistance.focus();
+
   }
 
-  _showForm(event) {
-    event.preventDefault();
+  _toggleElevationField() {
+    inputElevation.closest('.form__row').classList.toggle('form__row--hidden');
+    inputCadence.closest('.form__row').classList.toggle('form__row--hidden');
+  }
+
+  _newWorkout(e){
+    e.preventDefault();
     // Clear form
     inputDistance.value =
       inputDuration.value =
@@ -84,11 +96,6 @@ class App {
       )
       .setPopupContent('Workout')
       .openPopup();
-  }
-
-  _toggleElevationField() {
-    inputElevation.closest('.form__row').classList.toggle('form__row--hidden');
-    inputCadence.closest('.form__row').classList.toggle('form__row--hidden');
   }
 }
 
