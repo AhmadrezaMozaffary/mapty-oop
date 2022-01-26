@@ -64,6 +64,7 @@ class Cycling extends Workout {
 //////////////////////////////////////
 class App {
   #map;
+  #mapZoomLevel = 13;
   #mapEvent;
   #workouts = [];
 
@@ -73,6 +74,8 @@ class App {
     form.addEventListener('submit', this._newWorkout.bind(this));
 
     inputType.addEventListener('change', this._toggleElevationField);
+
+    containerWorkouts.addEventListener('click', this._moveToMarker.bind(this));
   }
 
   _getPosition() {
@@ -94,17 +97,14 @@ class App {
     const { latitude } = position.coords;
     const { longitude } = position.coords;
     const coords = [latitude, longitude];
-    this.#map = L.map('map').setView(coords, 13);
+    this.#map = L.map('map').setView(coords, this.#mapZoomLevel);
 
     L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
       attribution:
         ' Ahmadreza Mozaffary on  <a href="https://github.com/AhmadrezaMozaffary">GITHUB</a> ',
     }).addTo(this.#map);
 
-    L.marker(coords)
-      .addTo(this.#map)
-      .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-      .openPopup();
+    L.marker(coords).addTo(this.#map).bindPopup('You are here now').openPopup();
 
     // Handling Click on map
     this.#map.on('click', this._showForm.bind(this));
@@ -255,6 +255,23 @@ class App {
     }
 
     form.insertAdjacentHTML('afterend', workoutComponent);
+  }
+
+  _moveToMarker(event) {
+    const eTarget = event.target.closest('.workout');
+
+    if (!eTarget) return;
+
+    const workout = this.#workouts.find(
+      workout => workout.id == eTarget.dataset.id
+    );
+
+    this.#map.setView(workout.coords, this.#mapZoomLevel, {
+      animate: true,
+      pan: {
+        duration: 1,
+      },
+    });
   }
 }
 
