@@ -86,7 +86,7 @@ class App {
       navigator.geolocation.getCurrentPosition(
         this._loadMap.bind(this),
         function () {
-          alert('Could not get your position');
+          alertify.error('Could not get your position');
         },
         {
           enableHighAccuracy: true,
@@ -97,6 +97,7 @@ class App {
   }
 
   _loadMap(position) {
+    alertify.success("Loading map ...")
     const { latitude } = position.coords;
     const { longitude } = position.coords;
     const coords = [latitude, longitude];
@@ -164,7 +165,7 @@ class App {
         !inputsAreNumber(distance, duration, cadence) ||
         !inputsArePos(distance, duration, cadence)
       )
-        return alert('Inputs have to be positive numbers');
+        return alertify.error('Inputs have to be positive numbers');
       workout = new Running([lat, lng], duration, distance, cadence);
     }
 
@@ -176,7 +177,7 @@ class App {
         !inputsAreNumber(distance, duration, elevation) ||
         !inputsArePos(distance, duration)
       )
-        return alert('Inputs have to be positive numbers');
+        return alertify.error('Inputs have to be positive numbers');
       workout = new Cycling([lat, lng], duration, distance, elevation);
     }
 
